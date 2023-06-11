@@ -1,18 +1,36 @@
 import { AntDesign } from '@expo/vector-icons';
-import React from 'react';
-import { View, TextInput, Button, StyleSheet , Text, ImageBackground, Dimensions, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Image} from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet , Text, ImageBackground, Dimensions, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Image, useWindowDimensions} from 'react-native';
+
+
+const registrationState = {
+  login: '',
+  email: '',
+  password: '',
+}
+
 
 
 const RegistrationScreen = () => {
+  const [state, setState] = useState(registrationState)
+  const {height, width} = useWindowDimensions();
+
+
+  const handleSubmit = () => {
+console.log('we are here');
+  }
   return (
-    <View style={styles.container}>
+   
     <ImageBackground   source={require('../../assets/img/bgImage.jpg')}
-      style={styles.backgroundImage}>
-      <View style={styles.thumb}>
+       style={{ position: 'absolute', width: width, height: height }}>
+     
        <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              style={{width: '100%'}}
+              style={styles.container}
+              
             >
+
+<View style={styles.thumb}>
 
 <View style={styles.thumbAvatar}>
                 <Image style={styles.avatar} />               
@@ -22,46 +40,60 @@ const RegistrationScreen = () => {
       <View >  
       
     <Text style={[styles.title, styles.titleRegistration]}>Реєстрація</Text>
-      <TextInput style={styles.input} placeholder="Name" />
-      <TextInput style={styles.input} placeholder="Email" />
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry={true} />
+      <TextInput style={styles.input} placeholder="Логін" />
+      <TextInput style={styles.input} placeholder="Адреса електронної пошти" />
+      <TextInput style={styles.input} placeholder="Пароль" secureTextEntry={true} />
+
+      <TouchableOpacity  style={styles.button} onPress={handleSubmit}>      
+      <Text style={styles.buttonTitle}>Зареєстуватися</Text>
+      </TouchableOpacity>
       
-      <Button title="Register" onPress={() => console.log('Registration pressed')} />
-      
+      </View>
       </View>
       </KeyboardAvoidingView>
-      </View>
+      
       </ImageBackground>
-    </View>
+    
   );
 };
 
 const styles = StyleSheet.create({
   container: {    
-    flex: 1,    
+    flex: 1, 
+    // justifyContent: 'flex-end',   
   },
   thumb: {
+    marginTop: 263,
     paddingHorizontal: 16,   
     backgroundColor: '#fff',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    height: '60%',
+    height: '67%',
+
+    // paddingTop: 92,
+    // paddingBottom: 78,
+    // paddingHorizontal: 16,
+    // borderTopStartRadius: 25,
+    // borderTopEndRadius: 25,
+    // backgroundColor: '#FFFFFF',
   },
   thumbAvatar: {
     position: 'absolute',
     top: -60,
     alignSelf: 'center', 
-    backgroundColor: '#f6f6f6',
-    borderRadius: 16,
+   
   },
   avatar: {
     width: 120,
     height: 120,
+    borderRadius: 16,
+    backgroundColor: '#f6f6f6',
+   
   },
   addAvatar: {
     position: 'absolute',
     bottom: 14,
-    right: -12.5, 
+    right: -12, 
     color: '#ff6c00',    
   },
   title: {
@@ -86,12 +118,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e8e8e8',
     borderRadius: 8,
+  }, 
+  button: {
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    marginBottom: 16,
+    borderRadius: 100,
+    backgroundColor: '#FF6C00',
   },
-  backgroundImage: {
-    resizeMode: 'cover',
-    justifyContent: 'center',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+  buttonTitle: {
+    textAlign: 'center',
+    fontSize: 16,
+    lineHeight: 19,
+    fontFamily: 'Roboto-Regular',
+    color: '#FFFFFF',
   },
 });
 
