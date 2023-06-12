@@ -9,48 +9,82 @@ const registrationState = {
   password: '',
 }
 
-
-
 const RegistrationScreen = () => {
   const [state, setState] = useState(registrationState)
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
+  
   const {height, width} = useWindowDimensions();
 
+  const toggleSecureTextEntry = () => {
+    setSecureTextEntry(!secureTextEntry);
+  };
+  
 
   const handleSubmit = () => {
-console.log('we are here');
+setState(registrationState)
   }
+
+
   return (
    
     <ImageBackground   source={require('../../assets/img/bgImage.jpg')}
        style={{ position: 'absolute', width: width, height: height }}>
+       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+
      
        <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              style={styles.container}
-              
+              style={styles.container}             
             >
+            <View style={styles.thumb}>
 
-<View style={styles.thumb}>
-
-<View style={styles.thumbAvatar}>
-                <Image style={styles.avatar} />               
-                <AntDesign name="pluscircleo" size={25} color="black" style={styles.addAvatar}/>                 
-                {/* <AntDesign name="closecircleo" size={25} color="black" style={styles.addAvatar}/> */}                
+<View style={styles.thumbUser}>
+                <Image style={styles.userFoto} />               
+                <AntDesign name="pluscircleo" size={25} color="black" style={styles.addFoto}/>                 
+                {/* <AntDesign name="closecircleo" size={25} color="black" style={styles.addAvatar}/>                 */}
               </View>
       <View >  
-      
+
     <Text style={[styles.title, styles.titleRegistration]}>Реєстрація</Text>
-      <TextInput style={styles.input} placeholder="Логін" />
-      <TextInput style={styles.input} placeholder="Адреса електронної пошти" />
-      <TextInput style={styles.input} placeholder="Пароль" secureTextEntry={true} />
+      <TextInput style={styles.input} placeholder="Логін" value={state.login}
+                onChangeText={(value) =>
+                  setState((prev) => ({ ...prev, login: value }))
+                }               
+                />
+      <TextInput style={styles.input} placeholder="Адреса електронної пошти"  value={state.email}
+       onChangeText={(value) => {
+          setState(prev => ({
+              ...prev, email : value
+          }))
+        }} />
+     <View style={styles.passwordContainer}>
+     <TextInput style={styles.input} placeholder="Пароль" secureTextEntry={secureTextEntry} value={state.password}
+        onChangeText={(value) => {
+          setState(prev => ({
+              ...prev, password : value
+          }))
+        }} />
+
+  <TouchableOpacity  style={styles.passwordButton}onPress={toggleSecureTextEntry}>      
+      <Text style={styles.passwordTitle}>{secureTextEntry ? 'Показати' : 'Приховати'}</Text>
+      </TouchableOpacity>
+     </View>
 
       <TouchableOpacity  style={styles.button} onPress={handleSubmit}>      
-      <Text style={styles.buttonTitle}>Зареєстуватися</Text>
+      <Text style={styles.registerTitle}>Зареєстуватися</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity >      
+      <Text style={styles.loginTitle}>Вже є акаунт? Увійти</Text>
+      </TouchableOpacity>
+      
       
       </View>
       </View>
       </KeyboardAvoidingView>
+     
+      </TouchableWithoutFeedback>
       
       </ImageBackground>
     
@@ -58,46 +92,47 @@ console.log('we are here');
 };
 
 const styles = StyleSheet.create({
-  container: {    
+  container: {  
+    // backgroundColor:'tomato', 
+    
     flex: 1, 
-    // justifyContent: 'flex-end',   
+    justifyContent: 'flex-end',   
   },
   thumb: {
-    marginTop: 263,
-    paddingHorizontal: 16,   
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    height: '67%',
-
-    // paddingTop: 92,
-    // paddingBottom: 78,
-    // paddingHorizontal: 16,
-    // borderTopStartRadius: 25,
-    // borderTopEndRadius: 25,
-    // backgroundColor: '#FFFFFF',
+    // marginTop: 263,
+    // paddingHorizontal: 16,   
+    // backgroundColor: '#fff',
+    // borderTopLeftRadius: 25,
+    // borderTopRightRadius: 25,
+    // height: '67%',
+    paddingTop: 92,
+    paddingBottom: 78,
+    paddingHorizontal: 16,
+    borderTopStartRadius: 25,
+    borderTopEndRadius: 25,
+    backgroundColor: '#FFFFFF',
   },
-  thumbAvatar: {
+  thumbUser: {
     position: 'absolute',
     top: -60,
     alignSelf: 'center', 
    
   },
-  avatar: {
+  userFoto: {
     width: 120,
     height: 120,
     borderRadius: 16,
     backgroundColor: '#f6f6f6',
    
   },
-  addAvatar: {
+  addFoto: {
     position: 'absolute',
     bottom: 14,
     right: -12, 
     color: '#ff6c00',    
   },
   title: {
-    fontFamily: 'Roboto',
+    fontFamily: 'Roboto-Regular',
     fontStyle: 'normal',
     fontWeight: 500,
     fontSize: 30,
@@ -105,8 +140,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   titleRegistration: {
+    // marginBottom: 32,
+    // marginTop: 92,
+
     marginBottom: 32,
-    marginTop: 92,
+    fontSize: 30,
+    fontFamily: 'Roboto-Medium',
+    lineHeight: 35,
+    textAlign: 'center',
   },
   input: {
     height: 50,
@@ -126,13 +167,34 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: '#FF6C00',
   },
-  buttonTitle: {
+  registerTitle: {
     textAlign: 'center',
     fontSize: 16,
     lineHeight: 19,
     fontFamily: 'Roboto-Regular',
     color: '#FFFFFF',
   },
+  passwordContainer: {
+    position: 'relative',
+  },
+
+  passwordButton: {
+    position: 'absolute',
+    top: 15,
+    right: 12,
+  },
+  passwordTitle: {
+  fontSize: 16,
+  fontFamily: 'Roboto-Regular',
+  color: '#1B4371',
+ },
+ loginTitle: {
+  textAlign: 'center',
+  fontSize: 16,
+  fontFamily: 'Roboto-Regular',
+  lineHeight: 19,
+  color: '#1B4371',
+},
 });
 
 export default RegistrationScreen;
