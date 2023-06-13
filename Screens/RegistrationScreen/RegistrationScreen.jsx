@@ -22,6 +22,7 @@ const RegistrationScreen = () => {
 
   const handleSubmit = () => {
 setState(registrationState)
+console.log('hello');
   }
 
 
@@ -44,9 +45,10 @@ setState(registrationState)
                 <AntDesign name="pluscircleo" size={25} color="black" style={styles.addFoto}/>                 
                 {/* <AntDesign name="closecircleo" size={25} color="black" style={styles.addAvatar}/>                 */}
               </View>
-      <View >  
+    
 
-    <Text style={[styles.title, styles.titleRegistration]}>Реєстрація</Text>
+    <Text style={ styles.titleRegistration}>Реєстрація</Text>
+    <View  style={styles.inputThumb}>  
       <TextInput style={styles.input} placeholder="Логін" value={state.login}
                 onChangeText={(value) =>
                   setState((prev) => ({ ...prev, login: value }))
@@ -93,10 +95,12 @@ setState(registrationState)
 
 const styles = StyleSheet.create({
   container: {  
-    // backgroundColor:'tomato', 
+    // backgroundColor:'tomato',
+    // backgroundColor: 'transparent', 
     
     flex: 1, 
-    justifyContent: 'flex-end',   
+    justifyContent: 'flex-end',  
+    // paddingBottom: 100, 
   },
   thumb: {
     // marginTop: 263,
@@ -131,17 +135,18 @@ const styles = StyleSheet.create({
     right: -12, 
     color: '#ff6c00',    
   },
-  title: {
-    fontFamily: 'Roboto-Regular',
-    fontStyle: 'normal',
-    fontWeight: 500,
-    fontSize: 30,
-    lineHeight: 35,
-    textAlign: 'center',
-  },
+  // title: {
+  //   fontFamily: 'Roboto-Regular',
+  //   fontStyle: 'normal',
+  //   fontWeight: 500,
+  //   fontSize: 30,
+  //   lineHeight: 35,
+  //   textAlign: 'center',
+  // },
   titleRegistration: {
     // marginBottom: 32,
     // marginTop: 92,
+    
 
     marginBottom: 32,
     fontSize: 30,
@@ -149,11 +154,14 @@ const styles = StyleSheet.create({
     lineHeight: 35,
     textAlign: 'center',
   },
+  inputThumb: {
+    marginBottom: 32,
+    gap: 16,
+  },
   input: {
     height: 50,
     fontSize: 16,
-    padding: 16,
-    marginBottom: 16,
+    padding: 16,    
     color: '#212121',
     backgroundColor: '#f6f6f6',
     borderWidth: 1,
