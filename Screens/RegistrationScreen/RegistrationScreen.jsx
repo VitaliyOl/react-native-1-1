@@ -1,6 +1,9 @@
-import { AntDesign } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet , Text, ImageBackground, Dimensions, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Image, useWindowDimensions} from 'react-native';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
+
+import React, { useRef, useState } from 'react';
+import { View, TextInput, Button, StyleSheet , Text, ImageBackground, Dimensions, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Image, useWindowDimensions, Alert} from 'react-native';
+import AddUserImage from '../../Components/AddUserImage';
 
 
 const registrationState = {
@@ -10,105 +13,152 @@ const registrationState = {
 }
 
 const RegistrationScreen = () => {
+  const [image, setImage] = useState(null);
   const [state, setState] = useState(registrationState)
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [isFocused, setIsFocused] = useState(false);
+
+  
   
   const {height, width} = useWindowDimensions();
 
   const toggleSecureTextEntry = () => {
     setSecureTextEntry(!secureTextEntry);
   };
+
+  const handleLoadImage = async () => {
+ try {
+  let result = await DocumentPicker.getDocumentAsync({    
+    allowsEditing: true,      
+    quality: 1,
+  });  
+
+  if (!result.cancelled) {
+   setImage(result.uri);    
+  }
+ } catch (error) {
+  console.log(error);
+ } 
+  };
+
+  const handleRemoveImage = async () => {
+    if (image) {
+      try {
+        await FileSystem.deleteAsync(image, { idempotent: true });
+        setImage(null);
+       
+      } catch (error) {
+        console.log(error);
+      }
+    }   
+  };
+
+  const handleFocus = (input) => setIsFocused(input);
+  const handleBlur = () => setIsFocused(false);
+
+  
   
 
   const handleSubmit = () => {
 setState(registrationState)
 console.log('hello');
+console.log(state);
   }
 
 
   return (
-   
+
     <ImageBackground   source={require('../../assets/img/bgImage.jpg')}
-       style={{ position: 'absolute', width: width, height: height }}>
-       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    style={{ position: 'absolute', width: width, height: height }}>
+   
 
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? -220 : -220}
+        >
 
-     
-       <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              style={styles.container}             
-            >
-            <View style={styles.thumb}>
+ 
 
-<View style={styles.thumbUser}>
-                <Image style={styles.userFoto} />               
-                <AntDesign name="pluscircleo" size={25} color="black" style={styles.addFoto}/>                 
-                {/* <AntDesign name="closecircleo" size={25} color="black" style={styles.addAvatar}/>                 */}
-              </View>
+<View style={styles.thumb}>
+
+<AddUserImage  onImage={image}
+              onLoad={handleLoadImage}
+              onDelete={handleRemoveImage}/>
+
+                
     
 
-    <Text style={ styles.titleRegistration}>Реєстрація</Text>
-    <View  style={styles.inputThumb}>  
-      <TextInput style={styles.input} placeholder="Логін" value={state.login}
+
+<Text style={ styles.titleRegistration}>Реєстрація</Text>
+<View  style={styles.inputThumb}>
+
+
+<TextInput style={[styles.input, isFocused === 'login' && styles.inputFocus]} placeholder="Логін" value={state.login}
                 onChangeText={(value) =>
                   setState((prev) => ({ ...prev, login: value }))
-                }               
+                } 
+                onFocus={()=>{handleFocus('login')}}
+        onBlur={handleBlur}              
                 />
-      <TextInput style={styles.input} placeholder="Адреса електронної пошти"  value={state.email}
+      <TextInput style={[styles.input, isFocused === 'email' && styles.inputFocus]} placeholder="Адреса електронної пошти"  value={state.email}
        onChangeText={(value) => {
           setState(prev => ({
               ...prev, email : value
           }))
-        }} />
+        }} 
+        onFocus={()=>{handleFocus('email')}}
+        onBlur={handleBlur}
+        />
      <View style={styles.passwordContainer}>
-     <TextInput style={styles.input} placeholder="Пароль" secureTextEntry={secureTextEntry} value={state.password}
+     <TextInput style={[styles.input, isFocused === 'password' && styles.inputFocus]} placeholder="Пароль" secureTextEntry={secureTextEntry} value={state.password}
         onChangeText={(value) => {
           setState(prev => ({
               ...prev, password : value
           }))
-        }} />
+        }} 
+        onFocus={()=>{handleFocus('password')}}
+        onBlur={handleBlur}
+        />
 
   <TouchableOpacity  style={styles.passwordButton}onPress={toggleSecureTextEntry}>      
       <Text style={styles.passwordTitle}>{secureTextEntry ? 'Показати' : 'Приховати'}</Text>
       </TouchableOpacity>
      </View>
+      
 
-      <TouchableOpacity  style={styles.button} onPress={handleSubmit}>      
+</View>
+
+
+<TouchableOpacity  style={styles.button} onPress={handleSubmit}>      
       <Text style={styles.registerTitle}>Зареєстуватися</Text>
       </TouchableOpacity>
 
       <TouchableOpacity >      
       <Text style={styles.loginTitle}>Вже є акаунт? Увійти</Text>
       </TouchableOpacity>
-      
-      
-      </View>
-      </View>
-      </KeyboardAvoidingView>
-     
-      </TouchableWithoutFeedback>
-      
-      </ImageBackground>
-    
+</View>
+
+
+
+        </KeyboardAvoidingView>
+
+        </TouchableWithoutFeedback>
+
+        </ImageBackground>
+   
+
   );
 };
 
 const styles = StyleSheet.create({
-  container: {  
-    // backgroundColor:'tomato',
-    // backgroundColor: 'transparent', 
-    
+  container: {      
     flex: 1, 
     justifyContent: 'flex-end',  
-    // paddingBottom: 100, 
+    
   },
   thumb: {
-    // marginTop: 263,
-    // paddingHorizontal: 16,   
-    // backgroundColor: '#fff',
-    // borderTopLeftRadius: 25,
-    // borderTopRightRadius: 25,
-    // height: '67%',
     paddingTop: 92,
     paddingBottom: 78,
     paddingHorizontal: 16,
@@ -135,19 +185,8 @@ const styles = StyleSheet.create({
     right: -12, 
     color: '#ff6c00',    
   },
-  // title: {
-  //   fontFamily: 'Roboto-Regular',
-  //   fontStyle: 'normal',
-  //   fontWeight: 500,
-  //   fontSize: 30,
-  //   lineHeight: 35,
-  //   textAlign: 'center',
-  // },
-  titleRegistration: {
-    // marginBottom: 32,
-    // marginTop: 92,
-    
 
+  titleRegistration: {  
     marginBottom: 32,
     fontSize: 30,
     fontFamily: 'Roboto-Medium',
@@ -155,18 +194,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   inputThumb: {
-    marginBottom: 32,
+    marginBottom: 43,   
     gap: 16,
   },
   input: {
+    padding: 16,
     height: 50,
-    fontSize: 16,
-    padding: 16,    
-    color: '#212121',
-    backgroundColor: '#f6f6f6',
-    borderWidth: 1,
-    borderColor: '#e8e8e8',
     borderRadius: 8,
+    fontSize: 16,
+    lineHeight: 19,
+    fontFamily: 'Roboto-Regular',
+    backgroundColor: '#F6F6F6',
+   
   }, 
   button: {
     paddingVertical: 16,
@@ -184,6 +223,7 @@ const styles = StyleSheet.create({
   },
   passwordContainer: {
     position: 'relative',
+
   },
 
   passwordButton: {
@@ -202,6 +242,13 @@ const styles = StyleSheet.create({
   fontFamily: 'Roboto-Regular',
   lineHeight: 19,
   color: '#1B4371',
+},
+inputFocus: {
+  borderWidth: 1,
+  borderStyle: 'solid',
+  borderRadius: 8,
+  borderColor: '#FF6C00',
+  backgroundColor: '#FFFFFF',
 },
 });
 
